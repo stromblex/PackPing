@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "packping",
+	"version": "${version}",
+	"name": "PackPing",
+	"description": "A minimal in-game update checker for Minecraft modpacks.",
+	"authors": [
+		"stromblex"
+	],
+	"contact": {
+		"homepage": "https://github.com/stromblex",
+		"sources": "https://github.com/stromblex/PackPing"
+	},
+	"license": "MIT",
+	"icon": "assets/packping/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.stromblex.packping.fabric.PackPingFabric"
+		],
+		"client": [
+			"com.stromblex.packping.fabric.PackPingFabricClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": ">=1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

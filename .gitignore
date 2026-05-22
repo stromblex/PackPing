@@ -1,0 +1,21 @@
+# Gradle
+build/
+.gradle/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# Fabric/Loom
+run/
+.fabric/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+local.properties

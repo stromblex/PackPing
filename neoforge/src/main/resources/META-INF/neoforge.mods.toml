@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "packping"
+version = "${version}"
+displayName = "PackPing"
+description = "A minimal in-game update checker for Minecraft modpacks."
+authors = "stromblex"
+logoFile = "assets/packping/icon.png"
+
+[[dependencies.packping]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.packping]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"
