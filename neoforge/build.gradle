@@ -36,7 +36,12 @@ processResources {
     }
 }
 
+def mcVersionLabel = rootProject.minecraft_version == rootProject.minecraft_version_max
+        ? "mc${rootProject.minecraft_version}"
+        : "mc${rootProject.minecraft_version}-${rootProject.minecraft_version_max}"
+
 jar {
     archiveBaseName = 'packping'
     archiveAppendix = 'neoforge'
+    archiveVersion = "${project.version}+${mcVersionLabel}"
 }
