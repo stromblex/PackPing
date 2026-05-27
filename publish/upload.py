@@ -66,6 +66,18 @@ def upload_modrinth(config, secrets, version, changelog, loader):
     )
 
     if resp.status_code == 200:
+        version_id = resp.json()["id"]
+        # Patch version to set client/server side environment
+        patch = requests.patch(
+            f"https://api.modrinth.com/v2/version/{version_id}",
+            headers={"Authorization": token},
+            json={
+                "client_side": mc.get("client_side", "required"),
+                "server_side": mc.get("server_side", "unsupported")
+            }
+        )
+        if patch.status_code not in (200, 204):
+            print(f"[WARN] Modrinth {loader}: could not set environment ({patch.status_code})")
         print(f"[OK] Modrinth {loader}: uploaded {jar_path.name}")
         return True
     else:

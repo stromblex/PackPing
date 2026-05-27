@@ -5,11 +5,13 @@
     "loaders_neoforge": ["neoforge"],
     "game_versions": ["1.21", "1.21.1"],
     "version_type": "release",
-    "featured": true
+    "featured": true,
+    "client_side": "required",
+    "server_side": "unsupported"
   },
   "curseforge": {
     "project_id": "1550732",
-    "game_versions": [11458, 16115],
+    "game_versions": [11457, 11779],
     "loaders_fabric": [7499],
     "loaders_neoforge": [10150],
     "release_type": "release"
