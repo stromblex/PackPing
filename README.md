@@ -40,7 +40,8 @@
         "chatTitle": "§e▶ Modpack update available!",
         "chatVersionText": "§7Version: §f%current% §7→ §a%latest%",
         "chatChangesText": "§7Changes: §f%changelog%",
-        "chatDownloadText": "§7Download:"
+        "chatDownloadText": "§7Download:",
+        "chatLinkText": "§b[Click here]"
       }
     }
   },

@@ -120,4 +120,5 @@ public class PackPingConfig {
     public static String getChatVersionText() { return getString("chatVersionText", "\u00a77Version: \u00a7f%current% \u00a77\u2192 \u00a7a%latest%"); }
     public static String getChatChangesText() { return getString("chatChangesText", "\u00a77Changes: \u00a7f%changelog%"); }
     public static String getChatDownloadText() { return getString("chatDownloadText", "\u00a77Download:"); }
+    public static String getChatLinkText() { return getString("chatLinkText", "\u00a7b[Click here]"); }
 }

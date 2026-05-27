@@ -6,7 +6,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -175,19 +178,20 @@ public class UpdateChecker {
     private static void sendChatMessage(Minecraft client, String version, String downloadUrl, String changelog) {
         if (client.player == null) return;
 
-        String sep = "\u00a76\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501";
         String local = PackPingConfig.getLocalVersion();
+        String linkText = PackPingConfig.getChatLinkText();
 
-        client.player.sendSystemMessage(Component.literal(""));
-        client.player.sendSystemMessage(Component.literal(sep));
+        MutableComponent downloadComponent = Component.literal(PackPingConfig.getChatDownloadText() + " ")
+                .append(Component.literal(linkText)
+                        .withStyle(Style.EMPTY
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, downloadUrl))
+                                .withUnderlined(true)));
+
         client.player.sendSystemMessage(Component.literal(PackPingConfig.getChatTitle()));
         client.player.sendSystemMessage(Component.literal(
                 PackPingConfig.getChatVersionText().replace("%current%", local).replace("%latest%", version)));
         client.player.sendSystemMessage(Component.literal(
                 PackPingConfig.getChatChangesText().replace("%changelog%", changelog)));
-        client.player.sendSystemMessage(Component.literal(PackPingConfig.getChatDownloadText()));
-        client.player.sendSystemMessage(Component.literal(downloadUrl));
-        client.player.sendSystemMessage(Component.literal(sep));
-        client.player.sendSystemMessage(Component.literal(""));
+        client.player.sendSystemMessage(downloadComponent);
     }
 }
