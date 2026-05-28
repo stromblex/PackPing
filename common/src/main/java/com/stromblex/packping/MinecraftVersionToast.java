@@ -9,7 +9,7 @@ public class MinecraftVersionToast {
     public static void show(Minecraft client, String line1, String line2) {
         try {
             SystemToast.addOrUpdate(
-                    client.getToasts(),
+                    client.getToastManager(),
                     SystemToast.SystemToastId.WORLD_BACKUP,
                     Component.literal(line1),
                     Component.literal(line2));
