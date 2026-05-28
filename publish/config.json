@@ -11,7 +11,7 @@
   },
   "curseforge": {
     "project_id": "1550732",
-    "game_versions": [12079],
+    "game_versions": [12079, 4455],
     "loaders_fabric": [7499],
     "loaders_neoforge": [10150],
     "release_type": "release"
