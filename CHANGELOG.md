@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1.2
+
+- Updated dependencies
+
 ## 1.0.1.1
 
 - Starting to publish releases
