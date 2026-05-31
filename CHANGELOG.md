@@ -1,7 +1,12 @@
 # Changelog
 
+## 1.0.1.3
+
+- Updated to Minecraft 1.21.4
+
 ## 1.0.1.2
 
+- Updated to Minecraft 1.21.3
 - Updated dependencies
 
 ## 1.0.1.1
