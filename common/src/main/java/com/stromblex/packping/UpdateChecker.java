@@ -184,7 +184,7 @@ public class UpdateChecker {
         MutableComponent downloadComponent = Component.literal(PackPingConfig.getChatDownloadText() + " ")
                 .append(Component.literal(linkText)
                         .withStyle(Style.EMPTY
-                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, downloadUrl))
+                                .withClickEvent(new ClickEvent.OpenUrl(URI.create(downloadUrl)))
                                 .withUnderlined(true)));
 
         client.player.displayClientMessage(Component.literal(PackPingConfig.getChatTitle()), false);
