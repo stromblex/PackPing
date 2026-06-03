@@ -31,11 +31,11 @@ def mcVersionLabel = rootProject.minecraft_version == rootProject.minecraft_vers
 jar {
     archiveBaseName = 'packping'
     archiveAppendix = 'fabric'
-    archiveVersion = "${project.version}+${mcVersionLabel}"
+    archiveVersion = "${mcVersionLabel}-${project.version}"
 }
 
 remapJar {
     archiveBaseName = 'packping'
     archiveAppendix = 'fabric'
-    archiveVersion = "${project.version}+${mcVersionLabel}"
+    archiveVersion = "${mcVersionLabel}-${project.version}"
 }

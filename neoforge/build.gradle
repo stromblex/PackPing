@@ -43,5 +43,5 @@ def mcVersionLabel = rootProject.minecraft_version == rootProject.minecraft_vers
 jar {
     archiveBaseName = 'packping'
     archiveAppendix = 'neoforge'
-    archiveVersion = "${project.version}+${mcVersionLabel}"
+    archiveVersion = "${mcVersionLabel}-${project.version}"
 }

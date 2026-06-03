@@ -96,7 +96,7 @@ public class UpdateChecker {
     private static void parseResponse(String json) {
         try {
             JsonArray entries = GSON.fromJson(json, JsonArray.class);
-            String currentMcVersion = SharedConstants.getCurrentVersion().getName();
+            String currentMcVersion = SharedConstants.getCurrentVersion().name();
 
             JsonObject entry = null;
             for (int i = 0; i < entries.size(); i++) {

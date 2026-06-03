@@ -3,7 +3,7 @@
     "project_id": "ZHYSEYHD",
     "loaders_fabric": ["fabric"],
     "loaders_neoforge": ["neoforge"],
-    "game_versions": ["1.21.5"],
+    "game_versions": ["1.21.6"],
     "version_type": "release",
     "featured": true,
     "client_side": "required",
@@ -11,14 +11,15 @@
   },
   "curseforge": {
     "project_id": "1550732",
-    "game_versions": [12934, 4455],
+    "game_versions": [13422, 11135],
+    "environment": [9638],
     "loaders_fabric": [7499],
     "loaders_neoforge": [10150],
     "release_type": "release"
   },
   "jar_paths": {
-    "fabric": "fabric/build/libs/packping-fabric-{version}+mc{mc_range}.jar",
-    "neoforge": "neoforge/build/libs/packping-neoforge-{version}+mc{mc_range}.jar"
+    "fabric": "fabric/build/libs/packping-fabric-mc{mc_range}-{version}.jar",
+    "neoforge": "neoforge/build/libs/packping-neoforge-mc{mc_range}-{version}.jar"
   },
-  "mc_range": "1.21.5"
+  "mc_range": "1.21.6"
 }
