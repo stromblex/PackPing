@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1.6
+
+* Added support for Minecraft 1.21.7.
+* Updated internal dependencies for the current Minecraft version.
+* Refreshed release metadata for the 1.21.7 release files.
+* No config changes are required.
+
 ## 1.0.1.5
 
 * Added support for Minecraft 1.21.6.
