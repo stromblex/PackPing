@@ -15,7 +15,7 @@ public class PackPingNeoForge {
         Platform.init(FMLPaths.CONFIGDIR.get(), container.getModInfo().getVersion().toString());
         PackPing.LOGGER.info("PackPing initialized! (NeoForge)");
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             PackPingNeoForgeClient.init();
         }
     }
