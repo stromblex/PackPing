@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1.11
+
+* Added support for Minecraft 26.1.x.
+* Updated internal dependencies for Minecraft 26.1.2.
+* Refreshed update notification rendering and chat messages for current client APIs.
+* Refreshed release metadata for the 26.1 release files.
+* No config changes are required.
+
 ## 1.0.1.10
 
 * Added support for Minecraft 1.21.11.

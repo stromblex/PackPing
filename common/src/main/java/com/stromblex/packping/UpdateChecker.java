@@ -187,11 +187,11 @@ public class UpdateChecker {
                                 .withClickEvent(new ClickEvent.OpenUrl(URI.create(downloadUrl)))
                                 .withUnderlined(true)));
 
-        client.player.displayClientMessage(Component.literal(PackPingConfig.getChatTitle()), false);
-        client.player.displayClientMessage(Component.literal(
-                PackPingConfig.getChatVersionText().replace("%current%", local).replace("%latest%", version)), false);
-        client.player.displayClientMessage(Component.literal(
-                PackPingConfig.getChatChangesText().replace("%changelog%", changelog)), false);
-        client.player.displayClientMessage(downloadComponent, false);
+        client.player.sendSystemMessage(Component.literal(PackPingConfig.getChatTitle()));
+        client.player.sendSystemMessage(Component.literal(
+                PackPingConfig.getChatVersionText().replace("%current%", local).replace("%latest%", version)));
+        client.player.sendSystemMessage(Component.literal(
+                PackPingConfig.getChatChangesText().replace("%changelog%", changelog)));
+        client.player.sendSystemMessage(downloadComponent);
     }
 }

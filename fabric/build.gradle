@@ -12,9 +12,8 @@ sourceSets {
 
 dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
 }
 
 processResources {
@@ -24,17 +23,13 @@ processResources {
     }
 }
 
-def mcVersionLabel = rootProject.minecraft_version == rootProject.minecraft_version_max
+def mcVersionLabel = rootProject.hasProperty('mc_label')
+        ? "mc${rootProject.mc_label}"
+        : rootProject.minecraft_version == rootProject.minecraft_version_max
         ? "mc${rootProject.minecraft_version}"
         : "mc${rootProject.minecraft_version}-${rootProject.minecraft_version_max}"
 
 jar {
-    archiveBaseName = 'packping'
-    archiveAppendix = 'fabric'
-    archiveVersion = "${mcVersionLabel}-${project.version}"
-}
-
-remapJar {
     archiveBaseName = 'packping'
     archiveAppendix = 'fabric'
     archiveVersion = "${mcVersionLabel}-${project.version}"

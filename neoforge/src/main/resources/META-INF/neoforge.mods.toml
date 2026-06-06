@@ -13,13 +13,13 @@ logoFile = "assets/packping/icon.png"
 [[dependencies.packping]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.11,)"
+versionRange = "[26.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.packping]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.11, 1.21.12)"
+versionRange = "[26.1,26.2)"
 ordering = "NONE"
 side = "BOTH"

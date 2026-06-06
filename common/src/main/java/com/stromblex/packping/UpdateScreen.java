@@ -1,7 +1,7 @@
 package com.stromblex.packping;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -82,11 +82,11 @@ public class UpdateScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         long now = System.currentTimeMillis();
 
         if (closing) {
@@ -126,7 +126,7 @@ public class UpdateScreen extends Screen {
         if (this.font.width(title) > boxWidth - 100) {
             title = this.font.plainSubstrByWidth(title, boxWidth - 110) + "...";
         }
-        context.drawString(this.font, title, boxX + PADDING, headerTextY, 0xFFF0F6FC, false);
+        context.text(this.font, title, boxX + PADDING, headerTextY, 0xFFF0F6FC, false);
 
         // Version badge
         String versionBadge = "v" + version;
@@ -134,7 +134,7 @@ public class UpdateScreen extends Screen {
         int badgeX = boxX + boxWidth - badgeTextWidth - PADDING - 6;
         if (badgeX > boxX + this.font.width(title) + PADDING + 10) {
             context.fill(badgeX - 4, headerTextY - 3, badgeX + badgeTextWidth + 4, headerTextY + 11, a | 0x238636);
-            context.drawString(this.font, versionBadge, badgeX, headerTextY, 0xFFFFFFFF, false);
+            context.text(this.font, versionBadge, badgeX, headerTextY, 0xFFFFFFFF, false);
         }
 
         // Content area
@@ -148,14 +148,14 @@ public class UpdateScreen extends Screen {
             String currentText = "Current: v" + PackPingConfig.getLocalVersion();
             if (this.font.width(currentText) > contentMaxWidth)
                 currentText = this.font.plainSubstrByWidth(currentText, contentMaxWidth - 10) + "...";
-            context.drawString(this.font, currentText, boxX + PADDING, contentY, 0xFF8B949E, false);
+            context.text(this.font, currentText, boxX + PADDING, contentY, 0xFF8B949E, false);
             contentY += 12;
         }
         if (contentY + 10 < contentEndY) {
             String latestText = "Latest: v" + version;
             if (this.font.width(latestText) > contentMaxWidth)
                 latestText = this.font.plainSubstrByWidth(latestText, contentMaxWidth - 10) + "...";
-            context.drawString(this.font, latestText, boxX + PADDING, contentY, 0xFF58A6FF, false);
+            context.text(this.font, latestText, boxX + PADDING, contentY, 0xFF58A6FF, false);
             contentY += 16;
         }
 
@@ -167,7 +167,7 @@ public class UpdateScreen extends Screen {
 
         // Changelog
         if (contentY + 10 < contentEndY) {
-            context.drawString(this.font, "What's Changed:", boxX + PADDING, contentY, 0xFFF0F6FC, false);
+            context.text(this.font, "What's Changed:", boxX + PADDING, contentY, 0xFFF0F6FC, false);
             contentY += 12;
 
             String[] lines = changelog.split("\\\\n|\\n");
@@ -177,7 +177,7 @@ public class UpdateScreen extends Screen {
                 if (this.font.width(displayLine) > contentMaxWidth) {
                     displayLine = this.font.plainSubstrByWidth(displayLine, contentMaxWidth - 10) + "...";
                 }
-                context.drawString(this.font, displayLine, boxX + PADDING, contentY, 0xFF8B949E, false);
+                context.text(this.font, displayLine, boxX + PADDING, contentY, 0xFF8B949E, false);
                 contentY += 11;
             }
         }
@@ -185,8 +185,8 @@ public class UpdateScreen extends Screen {
         // Bottom separator
         context.fill(boxX + PADDING, buttonY - 8, boxX + boxWidth - PADDING, buttonY - 7, a | 0x21262D);
 
-        // Render buttons (via super) AFTER panel so they appear on top
-        super.render(context, mouseX, mouseY, delta);
+        // Extract buttons after the panel so their render state appears on top.
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -213,12 +213,12 @@ public class UpdateScreen extends Screen {
         }
 
         @Override
-        protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
             int bg = this.isHovered() ? hoverColor : bgColor;
             graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
             graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, bg);
             int textColor = this.isHovered() ? 0xFFFFFFFF : 0xFFD0D7DE;
-            graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(),
+            graphics.centeredText(Minecraft.getInstance().font, getMessage(),
                     getX() + getWidth() / 2, getY() + (getHeight() - 8) / 2, textColor);
         }
     }
