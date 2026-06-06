@@ -1,11 +1,11 @@
 package com.stromblex.packping;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 
 public class UpdateScreen extends Screen {
     private static final int BUTTON_HEIGHT = 20;
@@ -213,7 +213,7 @@ public class UpdateScreen extends Screen {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
             int bg = this.isHovered() ? hoverColor : bgColor;
             graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
             graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, bg);
