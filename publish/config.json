@@ -18,8 +18,8 @@
     "release_type": "release"
   },
   "jar_paths": {
-    "fabric": "fabric/build/libs/packping-fabric-mc{mc_range}-{version}.jar",
-    "neoforge": "neoforge/build/libs/packping-neoforge-mc{mc_range}-{version}.jar"
+    "fabric": "fabric/build/libs/packping-fabric-{version}.jar",
+    "neoforge": "neoforge/build/libs/packping-neoforge-{version}.jar"
   },
   "mc_range": "1.21.8"
 }
