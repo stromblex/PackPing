@@ -22,3 +22,4 @@ local.properties
 
 # Publish secrets (API keys)
 publish/secrets.json
+bin/
