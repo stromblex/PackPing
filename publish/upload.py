@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""
+PackPing Publish Script
+Uploads mod JARs to Modrinth and CurseForge via their APIs.
+
+Usage:
+    python3 publish/upload.py --version 1.0.1 --changelog "Fixed chat separators"
+    python3 publish/upload.py --version 1.0.1 --changelog "Fixed chat separators" --platform modrinth
+    python3 publish/upload.py --version 1.0.1 --changelog "Fixed chat separators" --platform curseforge
+"""
+
+import argparse
+import json
+import re
+import sys
+import requests
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+
+
+def load_json(path):
+    with open(path) as f:
+        return json.load(f)
+
+
+def get_jar_path(config, loader, version):
+    template = config["jar_paths"][loader]
+    mc_range = config["mc_range"]
+    jar_name = template.format(version=version, mc_range=mc_range)
+    return PROJECT_ROOT / jar_name
+
+
+def normalize_changelog(changelog):
+    """Accept either real newlines or shell-escaped newlines."""
+    return (
+        changelog
+        .replace("\\r\\n", "\n")
+        .replace("\\n", "\n")
+        .replace("\\t", "\t")
+        .replace("\\*", "*")
+    )
+
+
+def external_changelog(changelog):
+    """Use only the public release-note body, without a leading version heading."""
+    changelog = normalize_changelog(changelog).strip()
+    return re.sub(r"^#{1,6}\s+[^\n]+\n+", "", changelog, count=1).strip()
+
+
+def curseforge_changelog(changelog):
+    """CurseForge preserves markdown line breaks more reliably with CRLF."""
+    changelog = changelog.replace("\r\n", "\n").replace("\r", "\n")
+    return changelog.replace("\n", "\r\n")
+
+
+def read_text_arg(value, file_value):
+    if file_value is not None:
+        return external_changelog(Path(file_value).read_text())
+    return external_changelog(value or "")
+
+
+def upload_modrinth(config, secrets, version, changelog, loader):
+    token = secrets["modrinth_token"]
+    mc = config["modrinth"]
+
+    jar_path = get_jar_path(config, loader, version)
+    if not jar_path.exists():
+        print(f"[ERROR] JAR not found: {jar_path}")
+        return False
+
+    loaders = mc[f"loaders_{loader}"]
+    display_version = f"{version}+{loader}"
+
+    data = {
+        "name": f"PackPing {display_version}",
+        "version_number": display_version,
+        "changelog": changelog,
+        "dependencies": [],
+        "game_versions": mc["game_versions"],
+        "version_type": mc["version_type"],
+        "loaders": loaders,
+        "featured": mc["featured"],
+        "project_id": mc["project_id"],
+        "file_parts": ["file"],
+        "primary_file": "file"
+    }
+
+    resp = requests.post(
+        "https://api.modrinth.com/v2/version",
+        headers={"Authorization": token},
+        data={"data": json.dumps(data)},
+        files={"file": (jar_path.name, open(jar_path, "rb"), "application/java-archive")}
+    )
+
+    if resp.status_code == 200:
+        version_id = resp.json()["id"]
+        # Patch version to set client/server side environment
+        patch = requests.patch(
+            f"https://api.modrinth.com/v2/version/{version_id}",
+            headers={"Authorization": token},
+            json={
+                "client_side": mc.get("client_side", "required"),
+                "server_side": mc.get("server_side", "unsupported")
+            }
+        )
+        if patch.status_code not in (200, 204):
+            print(f"[WARN] Modrinth {loader}: could not set environment ({patch.status_code})")
+        print(f"[OK] Modrinth {loader}: uploaded {jar_path.name}")
+        return True
+    else:
+        print(f"[ERROR] Modrinth {loader}: {resp.status_code} - {resp.text}")
+        return False
+
+
+def upload_curseforge(config, secrets, version, changelog, loader):
+    token = secrets["curseforge_token"]
+    cf = config["curseforge"]
+
+    jar_path = get_jar_path(config, loader, version)
+    if not jar_path.exists():
+        print(f"[ERROR] JAR not found: {jar_path}")
+        return False
+
+    game_versions = cf["game_versions"] + cf.get("environment", []) + cf[f"loaders_{loader}"]
+    display_name = jar_path.stem
+
+    metadata = {
+        "changelog": curseforge_changelog(changelog),
+        "changelogType": "markdown",
+        "displayName": display_name,
+        "gameVersions": game_versions,
+        "releaseType": cf["release_type"]
+    }
+
+    resp = requests.post(
+        f"https://minecraft.curseforge.com/api/projects/{cf['project_id']}/upload-file",
+        headers={"X-Api-Token": token},
+        data={"metadata": json.dumps(metadata)},
+        files={"file": (jar_path.name, open(jar_path, "rb"), "application/java-archive")}
+    )
+
+    if resp.status_code == 200:
+        print(f"[OK] CurseForge {loader}: uploaded {jar_path.name}")
+        return True
+    else:
+        print(f"[ERROR] CurseForge {loader}: {resp.status_code} - {resp.text}")
+        return False
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Upload PackPing to Modrinth/CurseForge")
+    parser.add_argument("--version", required=True, help="Mod version (e.g. 1.0.1)")
+    parser.add_argument("--changelog", default=None, help="Changelog text (markdown)")
+    parser.add_argument("--changelog-file", default=None, help="Read changelog text from a file")
+    parser.add_argument("--platform", choices=["modrinth", "curseforge", "both"], default="both")
+    parser.add_argument("--loader", choices=["fabric", "neoforge", "both"], default="both")
+    parser.add_argument("--changelog-neoforge", default=None, help="Separate changelog for NeoForge (optional)")
+    parser.add_argument("--changelog-neoforge-file", default=None, help="Read separate NeoForge changelog from a file")
+    args = parser.parse_args()
+
+    if args.changelog is None and args.changelog_file is None:
+        parser.error("one of --changelog or --changelog-file is required")
+
+    secrets = load_json(SCRIPT_DIR / "secrets.json")
+    config = load_json(SCRIPT_DIR / "config.json")
+
+    loaders = ["fabric", "neoforge"] if args.loader == "both" else [args.loader]
+    platforms = ["modrinth", "curseforge"] if args.platform == "both" else [args.platform]
+
+    success = True
+    for loader in loaders:
+        changelog = read_text_arg(args.changelog, args.changelog_file)
+        if loader == "neoforge" and (args.changelog_neoforge is not None or args.changelog_neoforge_file is not None):
+            changelog = read_text_arg(args.changelog_neoforge, args.changelog_neoforge_file)
+
+        for platform in platforms:
+            if platform == "modrinth":
+                if not upload_modrinth(config, secrets, args.version, changelog, loader):
+                    success = False
+            elif platform == "curseforge":
+                if not upload_curseforge(config, secrets, args.version, changelog, loader):
+                    success = False
+
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    main()
