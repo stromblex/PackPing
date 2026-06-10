@@ -1,9 +1,15 @@
 {
   "modrinth": {
     "project_id": "ZHYSEYHD",
-    "loaders_fabric": ["fabric"],
-    "loaders_neoforge": ["neoforge"],
-    "game_versions": ["1.21.2"],
+    "loaders_fabric": [
+      "fabric"
+    ],
+    "loaders_neoforge": [
+      "neoforge"
+    ],
+    "game_versions": [
+      "1.21.2"
+    ],
     "version_type": "release",
     "featured": true,
     "client_side": "required",
@@ -11,9 +17,19 @@
   },
   "curseforge": {
     "project_id": "1550732",
-    "game_versions": [12079],
-    "loaders_fabric": [7499],
-    "loaders_neoforge": [10150],
+    "game_versions": [
+      12079,
+      11135
+    ],
+    "environment": [
+      9638
+    ],
+    "loaders_fabric": [
+      7499
+    ],
+    "loaders_neoforge": [
+      10150
+    ],
     "release_type": "release"
   },
   "jar_paths": {
