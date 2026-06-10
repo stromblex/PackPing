@@ -2,6 +2,7 @@ package com.stromblex.packping;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.JsonObject;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
@@ -12,19 +13,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class UpdateChecker {
     private static final Gson GSON = new Gson();
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
     private static final ScheduledExecutorService SCHEDULER =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "PackPing-Update");
@@ -49,7 +43,10 @@ public class UpdateChecker {
         }
 
         try {
-            URI.create(updateUrl);
+            URI uri = URI.create(updateUrl);
+            if ("http".equalsIgnoreCase(uri.getScheme())) {
+                PackPing.LOGGER.warn("Update URL uses HTTP; HTTPS is recommended");
+            }
         } catch (IllegalArgumentException e) {
             PackPing.LOGGER.error("Invalid update URL: {}", updateUrl);
             return;
@@ -65,21 +62,10 @@ public class UpdateChecker {
 
     private static void performCheck(String updateUrl, int attempt) {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(updateUrl))
-                    .timeout(Duration.ofSeconds(15))
-                    .GET()
-                    .build();
-
-            HttpResponse<String> response = HTTP_CLIENT.send(request,
-                    HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                parseResponse(response.body());
-            } else {
-                PackPing.LOGGER.error("Update check failed, HTTP {}", response.statusCode());
-                retryIfPossible(updateUrl, attempt);
-            }
+            parseResponse(UpdateJsonFetcher.fetch(updateUrl));
+        } catch (UpdateJsonFetcher.UpdateFetchException e) {
+            PackPing.LOGGER.error("Update check failed: {}", e.getMessage());
+            retryIfPossible(updateUrl, attempt);
         } catch (Exception e) {
             PackPing.LOGGER.error("Error checking for updates", e);
             retryIfPossible(updateUrl, attempt);
@@ -96,6 +82,10 @@ public class UpdateChecker {
     private static void parseResponse(String json) {
         try {
             JsonArray entries = GSON.fromJson(json, JsonArray.class);
+            if (entries == null) {
+                throw new JsonSyntaxException("root value is null");
+            }
+
             String currentMcVersion = SharedConstants.getCurrentVersion().getName();
 
             JsonObject entry = null;
@@ -143,7 +133,7 @@ public class UpdateChecker {
                 PackPing.LOGGER.info("Up to date ({})", currentVersion);
             }
         } catch (Exception e) {
-            PackPing.LOGGER.error("Error parsing update response", e);
+            PackPing.LOGGER.error("Invalid update JSON", e);
         }
     }
 
