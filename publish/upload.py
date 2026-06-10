@@ -11,8 +11,8 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
-import os
 import requests
 from pathlib import Path
 
@@ -30,6 +30,35 @@ def get_jar_path(config, loader, version):
     mc_range = config["mc_range"]
     jar_name = template.format(version=version, mc_range=mc_range)
     return PROJECT_ROOT / jar_name
+
+
+def normalize_changelog(changelog):
+    """Accept either real newlines or shell-escaped newlines."""
+    return (
+        changelog
+        .replace("\\r\\n", "\n")
+        .replace("\\n", "\n")
+        .replace("\\t", "\t")
+        .replace("\\*", "*")
+    )
+
+
+def external_changelog(changelog):
+    """Use only the public release-note body, without a leading version heading."""
+    changelog = normalize_changelog(changelog).strip()
+    return re.sub(r"^#{1,6}\s+[^\n]+\n+", "", changelog, count=1).strip()
+
+
+def curseforge_changelog(changelog):
+    """CurseForge preserves markdown line breaks more reliably with CRLF."""
+    changelog = changelog.replace("\r\n", "\n").replace("\r", "\n")
+    return changelog.replace("\n", "\r\n")
+
+
+def read_text_arg(value, file_value):
+    if file_value is not None:
+        return external_changelog(Path(file_value).read_text())
+    return external_changelog(value or "")
 
 
 def upload_modrinth(config, secrets, version, changelog, loader):
@@ -94,13 +123,13 @@ def upload_curseforge(config, secrets, version, changelog, loader):
         print(f"[ERROR] JAR not found: {jar_path}")
         return False
 
-    game_versions = cf["game_versions"] + cf[f"loaders_{loader}"]
-    display_version = f"{version}+{loader}"
+    game_versions = cf["game_versions"] + cf.get("environment", []) + cf[f"loaders_{loader}"]
+    display_name = jar_path.stem
 
     metadata = {
-        "changelog": changelog,
+        "changelog": curseforge_changelog(changelog),
         "changelogType": "markdown",
-        "displayName": display_version,
+        "displayName": display_name,
         "gameVersions": game_versions,
         "releaseType": cf["release_type"]
     }
@@ -123,11 +152,16 @@ def upload_curseforge(config, secrets, version, changelog, loader):
 def main():
     parser = argparse.ArgumentParser(description="Upload PackPing to Modrinth/CurseForge")
     parser.add_argument("--version", required=True, help="Mod version (e.g. 1.0.1)")
-    parser.add_argument("--changelog", required=True, help="Changelog text (markdown)")
+    parser.add_argument("--changelog", default=None, help="Changelog text (markdown)")
+    parser.add_argument("--changelog-file", default=None, help="Read changelog text from a file")
     parser.add_argument("--platform", choices=["modrinth", "curseforge", "both"], default="both")
     parser.add_argument("--loader", choices=["fabric", "neoforge", "both"], default="both")
     parser.add_argument("--changelog-neoforge", default=None, help="Separate changelog for NeoForge (optional)")
+    parser.add_argument("--changelog-neoforge-file", default=None, help="Read separate NeoForge changelog from a file")
     args = parser.parse_args()
+
+    if args.changelog is None and args.changelog_file is None:
+        parser.error("one of --changelog or --changelog-file is required")
 
     secrets = load_json(SCRIPT_DIR / "secrets.json")
     config = load_json(SCRIPT_DIR / "config.json")
@@ -137,9 +171,9 @@ def main():
 
     success = True
     for loader in loaders:
-        changelog = args.changelog
-        if loader == "neoforge" and args.changelog_neoforge:
-            changelog = args.changelog_neoforge
+        changelog = read_text_arg(args.changelog, args.changelog_file)
+        if loader == "neoforge" and (args.changelog_neoforge is not None or args.changelog_neoforge_file is not None):
+            changelog = read_text_arg(args.changelog_neoforge, args.changelog_neoforge_file)
 
         for platform in platforms:
             if platform == "modrinth":
