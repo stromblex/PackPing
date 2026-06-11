@@ -14,6 +14,7 @@
 [
   {
     "minecraft": "1.21",
+    "loader": "fabric",
     "version": "1.0.0",
     "download": "https://example.com/modpack-1.0.0.zip",
     "changelog": "New biomes added\nPerformance fixes\nNew mods included",
@@ -44,7 +45,7 @@
         "chatLinkText": "§b[Click here]"
       }
     }
-  },
+  }
 ]
 ```
 
@@ -54,4 +55,3 @@
 ./gradlew :fabric:build
 ./gradlew :neoforge:build
 ```
-

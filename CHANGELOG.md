@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0-mc26.1.x-release
+
+* Fixed update checks selecting the wrong release metadata when multiple entries target the same Minecraft version.
+* Added optional `loader` matching for server update JSON entries.
+* Rebuilt release artifacts for Minecraft 26.1.x.
+* No local config changes are required.
+
 ## 1.1.0-mc.26.1.x
 
 * Fixed update checks failing when update metadata URLs return HTTP redirects.
