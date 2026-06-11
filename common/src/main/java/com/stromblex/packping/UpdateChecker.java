@@ -87,11 +87,12 @@ public class UpdateChecker {
             }
 
             String currentMcVersion = SharedConstants.getCurrentVersion().name();
+            String currentLoader = Platform.getLoader();
 
             JsonObject entry = null;
             for (int i = 0; i < entries.size(); i++) {
                 JsonObject obj = entries.get(i).getAsJsonObject();
-                if (obj.has("minecraft") && obj.get("minecraft").getAsString().equals(currentMcVersion)) {
+                if (matchesEntry(obj, currentMcVersion, currentLoader)) {
                     entry = obj;
                     break;
                 }
@@ -135,6 +136,13 @@ public class UpdateChecker {
         } catch (Exception e) {
             PackPing.LOGGER.error("Invalid update JSON", e);
         }
+    }
+
+    private static boolean matchesEntry(JsonObject obj, String currentMcVersion, String currentLoader) {
+        if (!obj.has("minecraft") || !obj.get("minecraft").getAsString().equals(currentMcVersion)) {
+            return false;
+        }
+        return !obj.has("loader") || obj.get("loader").getAsString().equalsIgnoreCase(currentLoader);
     }
 
     private static void showNotification(String version, String downloadUrl, String changelog) {

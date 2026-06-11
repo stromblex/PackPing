@@ -13,7 +13,7 @@ public class PackPingFabric implements ModInitializer {
                 .map(c -> c.getMetadata().getVersion().getFriendlyString())
                 .orElse("unknown");
 
-        Platform.init(FabricLoader.getInstance().getConfigDir(), version);
+        Platform.init(FabricLoader.getInstance().getConfigDir(), version, "fabric");
         PackPing.LOGGER.info("PackPing initialized! (Fabric)");
     }
 }
