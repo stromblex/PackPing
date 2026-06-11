@@ -12,7 +12,7 @@ import net.neoforged.fml.loading.FMLPaths;
 public class PackPingNeoForge {
 
     public PackPingNeoForge(IEventBus modBus, ModContainer container) {
-        Platform.init(FMLPaths.CONFIGDIR.get(), container.getModInfo().getVersion().toString());
+        Platform.init(FMLPaths.CONFIGDIR.get(), container.getModInfo().getVersion().toString(), "neoforge");
         PackPing.LOGGER.info("PackPing initialized! (NeoForge)");
 
         if (FMLEnvironment.getDist().isClient()) {
