@@ -110,25 +110,16 @@ public class UpdateChecker {
 
             // Version check
             String latestVersion = entry.get("version").getAsString();
-            String downloadUrl = entry.get("download").getAsString();
-            String changelog = entry.has("changelog") ? entry.get("changelog").getAsString() : "Update available";
-
             String currentVersion = PackPingConfig.getLocalVersion();
             PackPing.LOGGER.info("Current: {}, Latest: {}", currentVersion, latestVersion);
+
+            showToastIfConfigured(entry);
 
             if (!latestVersion.equals(currentVersion)) {
                 PackPing.LOGGER.info("Update available: {} -> {}", currentVersion, latestVersion);
 
-                // Toast notification (only if outdated)
-                if (!shownToast && PackPingConfig.shouldShowToast() && entry.has("toast")) {
-                    JsonObject toast = entry.getAsJsonObject("toast");
-                    String title = toast.has("title") ? toast.get("title").getAsString() : "New version available!";
-                    String subtitle = toast.has("subtitle") ? toast.get("subtitle").getAsString() : "";
-                    Minecraft.getInstance().execute(() ->
-                            MinecraftVersionToast.show(Minecraft.getInstance(), title, subtitle));
-                    shownToast = true;
-                }
-
+                String downloadUrl = entry.get("download").getAsString();
+                String changelog = entry.has("changelog") ? entry.get("changelog").getAsString() : "Update available";
                 Minecraft.getInstance().execute(() -> showNotification(latestVersion, downloadUrl, changelog));
             } else {
                 PackPing.LOGGER.info("Up to date ({})", currentVersion);
@@ -143,6 +134,24 @@ public class UpdateChecker {
             return false;
         }
         return !obj.has("loader") || obj.get("loader").getAsString().equalsIgnoreCase(currentLoader);
+    }
+
+    private static void showToastIfConfigured(JsonObject entry) {
+        if (shownToast || !PackPingConfig.shouldShowToast() || !entry.has("toast")) {
+            return;
+        }
+
+        if (!entry.get("toast").isJsonObject()) {
+            PackPing.LOGGER.warn("Ignoring toast entry because it is not an object");
+            return;
+        }
+
+        JsonObject toast = entry.getAsJsonObject("toast");
+        String title = toast.has("title") ? toast.get("title").getAsString() : "New version available!";
+        String subtitle = toast.has("subtitle") ? toast.get("subtitle").getAsString() : "";
+        Minecraft.getInstance().execute(() ->
+                MinecraftVersionToast.show(Minecraft.getInstance(), title, subtitle));
+        shownToast = true;
     }
 
     private static void showNotification(String version, String downloadUrl, String changelog) {
