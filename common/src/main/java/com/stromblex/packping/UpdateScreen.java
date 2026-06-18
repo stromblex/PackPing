@@ -93,7 +93,7 @@ public class UpdateScreen extends Screen {
             float progress = (float) (now - closeStartTime) / FADE_DURATION_MS;
             alpha = 1f - Math.min(1f, progress);
             if (progress >= 1f) {
-                if (this.minecraft != null) this.minecraft.setScreen(parent);
+                if (this.minecraft != null) this.minecraft.gui.setScreen(parent);
                 return;
             }
         } else {

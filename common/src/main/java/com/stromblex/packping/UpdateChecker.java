@@ -161,8 +161,8 @@ public class UpdateChecker {
         pendingChangelog = changelog;
 
         if (PackPingConfig.shouldShowFullscreen()) {
-            Screen currentScreen = client.screen;
-            client.setScreen(new UpdateScreen(currentScreen, version, downloadUrl, changelog));
+            Screen currentScreen = client.gui.screen();
+            client.gui.setScreen(new UpdateScreen(currentScreen, version, downloadUrl, changelog));
         }
 
         if (!shownChat && client.player != null && PackPingConfig.shouldShowChat()) {
